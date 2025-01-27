@@ -1,123 +1,293 @@
-# Sistema de Simulación de Combates Épicos
+# Proyecto Evaluable: **Sistema de Simulación de Combates Épicos**
 
-## Enunciado
-
-En un mundo dividido entre héroes y villanos, los combates no son solo una cuestión de fuerza bruta, sino de estrategia, habilidades únicas y trabajo en equipo. Tu misión es desarrollar un sistema de simulación de combates épicos que permita enfrentar a héroes contra villanos en diferentes escenarios.
-
-### Requerimientos del Sistema
-
-Deberás implementar un programa en Java que cumpla con las siguientes características:
-
-1. **Creación de Personajes:**
-   - Los usuarios podrán crear héroes y villanos con atributos personalizados dentro de ciertos rangos:
-     - **Héroes** pueden curarse o reforzar su defensa durante el combate.
-     - **Villanos** pueden duplicar su poder o envenenar a sus enemigos.
-   - Cada personaje tendrá nivel, experiencia, puntos de vida, poder, puntos de maná, probabilidad de esquivar ataques y probabilidad de realizar ataques críticos.
-
-2. **Sistema de Combate:**
-   - Los combates se realizarán en "turnos" y contarán con:
-     - Un sistema de probabilidad para ataques críticos (daño x2).
-     - Posibilidad de esquivar ataques.
-     - Restricción en el uso de habilidades especiales según los puntos de maná.
-   - Los héroes y villanos podrán usar habilidades únicas y objetos durante los combates.
-
-3. **Rings de Lucha:**
-   - Los combates ocurren en escenarios llamados "rings", que pueden incluir peligros (trampas) o ventajas que afecten las estrategias de los personajes.
-
-4. **Torneos y Misiones:**
-   - Los usuarios podrán organizar torneos entre héroes y villanos, permitiendo combates 1v1, por equipos, o "todos contra todos".
-   - Los personajes podrán participar en misiones, completarlas y obtener recompensas (objetos o experiencia).
-
-5. **Objetos y Estrategias:**
-   - Se incluirán objetos que los personajes pueden usar durante los combates:
-     - Ejemplo: pociones curativas, armas especiales o escudos defensivos.
-   - El uso estratégico de objetos será clave para ganar combates.
-
-6. **Clase Principal Obligatoria:**
-   - Deberá existir una clase `SimuladorDeCombate` que incluya el método `main` como punto de entrada del programa. En este método se inicializará el sistema, se permitirán las configuraciones iniciales de personajes y se podrá navegar entre las opciones disponibles (combate, torneos, misiones, etc.).
+## Objetivo General
+Desarrollar un sistema de simulación de combates en Java que utilice **herencia**, **polimorfismo** y **colecciones**, mientras se exploran los principios básicos de la programación orientada a objetos. Este proyecto permitirá a los estudiantes implementar y reforzar estos conceptos mediante el diseño de clases, jerarquías y la manipulación de datos usando estructuras dinámicas.
 
 ---
 
-## Diagrama UML
+## Desglose del Proyecto
 
-A continuación se presenta el diagrama UML que refleja la estructura del sistema propuesto:
+### **Parte 1: Contexto y Motivación**
+En un mundo fantástico donde héroes y villanos se enfrentan constantemente, las batallas no solo se ganan con fuerza, sino también con estrategia y habilidades únicas. Los estudiantes diseñarán un sistema que permita crear personajes, organizar combates, y gestionar misiones y torneos.
 
-```plantuml
-@startuml
-class Personaje {
-  - nombre: String
-  - puntosVida: int
-  - poder: int
-  - nivel: int
-  - experiencia: int
-  - mana: int
-  - esquivarProbabilidad: double
-  - criticoProbabilidad: double
-  + atacar(objetivo: Personaje): void
-  + esquivarAtaque(): boolean
-  + realizarCritico(): boolean
-  + subirNivel(): void
-  + usarHabilidad(): void
-}
+El sistema debe incluir:
+1. **Creación de héroes y villanos** con atributos personalizados.
+2. Un **sistema de combate por turnos**.
+3. Escenarios dinámicos (rings) que modifiquen las reglas de combate.
+4. Un módulo para **torneos y misiones**.
 
-class Heroe {
-  + curar(): void
-  + reforzarDefensa(): void
-}
-Heroe --|> Personaje
+---
 
-class Villano {
-  + duplicarPoder(): void
-  + envenenar(objetivo: Personaje): void
-}
-Villano --|> Personaje
+## Requisitos Detallados
+A continuación, se presentan los pasos concretos que los estudiantes deberán implementar:
 
-class RingDeLucha {
-  - dificultad: String
-  - peligros: List<String>
-  + aplicarPeligros(): void
-  + calcularVentaja(tipo: String): void
-}
+---
 
-class Objeto {
-  - nombre: String
-  - tipo: String
-  - efecto: int
-  + usar(objetivo: Personaje): void
-}
+### **1. Clase Abstracta `Personaje`**
+La clase base para todos los personajes del juego.
 
-class Equipo {
-  - miembros: List<Personaje>
-  + curarEquipo(): void
-  + usarHabilidadEquipo(): void
-}
+#### Atributos:
+- **`nombre`**: Nombre del personaje.
+- **`nivel`**: Nivel del personaje, comienza en 1 y aumenta al ganar experiencia.
+- **`experiencia`**: Puntos acumulados para subir de nivel.
+- **`puntosVida`**: Vida actual del personaje.
+- **`mana`**: Energía para usar habilidades especiales.
+- **`poder`**: Daño base de los ataques.
+- **`defensa`**: Reducción del daño recibido.
+- **`esquivarProbabilidad`**: Probabilidad de esquivar ataques (0.0 a 1.0).
+- **`criticoProbabilidad`**: Probabilidad de realizar un ataque crítico (0.0 a 1.0).
 
-class Mision {
-  - descripcion: String
-  - recompensa: String
-  + completarMision(): void
-}
+#### Métodos:
+- **`atacar(Personaje objetivo)`**  
+   Realiza un ataque básico al objetivo, calculando si es crítico y aplicando la defensa.
+   
+- **`esquivarAtaque()`**  
+   Devuelve `true` si el ataque es esquivado.
 
-class Torneo {
-  + organizarCombate1v1(): void
-  + organizarCombateEquipo(): void
-  + organizarTodosContraTodos(): void
-}
+- **`recibirDanio(int danio)`**  
+   Reduce los puntos de vida del personaje tras calcular la defensa.
 
-class SimuladorDeCombate {
-  + main(args: String[]): void
-  + inicializarSistema(): void
-  + menuPrincipal(): void
-  + ejecutarCombate(): void
-  + organizarTorneo(): void
-  + iniciarMision(): void
-}
+- **`usarHabilidadEspecial()`**  
+   Método abstracto para habilidades únicas.
 
-Personaje "1" *-- "0..n" Objeto
-RingDeLucha "1" *-- "0..n" Personaje
-Equipo "1" *-- "0..n" Personaje
-Mision "1" *-- "0..n" Personaje
-Torneo "1" *-- "0..n" Personaje
-SimuladorDeCombate "1" *-- "0..n" Personaje
-@enduml
+- **`subirNivel()`**  
+   Incrementa los atributos del personaje (vida, poder, etc.).
 
+---
+
+### **2. Clase `Heroe`**
+Heredada de `Personaje`, los héroes son personajes con habilidades de apoyo.
+
+#### Atributos Específicos:
+- **`curacionBase`**: Puntos de vida que el héroe puede restaurar.
+- **`defensaExtra`**: Incremento temporal de defensa.
+
+#### Métodos:
+- **`usarHabilidadEspecial()`**  
+   Implementación concreta para héroes:
+   - **`curar()`**: Restaura puntos de vida.
+   - **`reforzarDefensa()`**: Incrementa temporalmente la defensa.
+
+---
+
+### **3. Clase `Villano`**
+Heredada de `Personaje`, los villanos son personajes con habilidades agresivas.
+
+#### Atributos Específicos:
+- **`venenoBase`**: Daño continuo infligido al usar veneno.
+- **`poderDuplicado`**: Indica si el villano ha duplicado su poder.
+
+#### Métodos:
+- **`usarHabilidadEspecial()`**  
+   Implementación concreta para villanos:
+   - **`duplicarPoder()`**: Duplica temporalmente el poder del villano.
+   - **`envenenar(Personaje objetivo)`**: Inflige daño continuo al objetivo.
+
+---
+
+### **4. Clase `RingDeLucha`**
+Representa el escenario donde se realizan los combates.
+
+#### Atributos:
+- **`nombre`**: Nombre del ring.
+- **`peligros`**: Lista de trampas o efectos negativos.
+- **`ventajas`**: Ventajas específicas para héroes o villanos.
+
+#### Métodos:
+- **`aplicarPeligros(List<Personaje> personajes)`**
+   Aplica trampas o efectos negativos a los personajes.
+
+- **`calcularVentaja(String tipo)`**
+   Ajusta atributos según si el personaje es héroe o villano.
+
+---
+
+### **5. Clase `Equipo`**
+Representa un grupo de personajes (héroes y/o villanos) que pueden participar en combates de equipo.
+
+#### Atributos:
+- **`nombre`**: Nombre del equipo.
+- **`miembros`**: Lista de personajes que forman parte del equipo.
+
+#### Métodos:
+- **`añadirMiembro(Personaje personaje)`**
+   Añade un personaje al equipo.
+
+- **`eliminarMiembro(Personaje personaje)`**
+   Elimina un personaje del equipo.
+
+- **`curarEquipo()`**
+   Restaura puntos de vida a todos los miembros del equipo.
+
+- **`usarHabilidadEquipo()`**
+   Activa las habilidades especiales de todos los miembros del equipo.
+
+- **`estaDerrotado()`**
+   Devuelve `true` si todos los miembros del equipo están derrotados (puntos de vida ≤ 0).
+
+---
+
+### **6. Clase `Mision`**
+Representa una misión que los personajes pueden completar para ganar experiencia y recompensas.
+
+#### Atributos:
+- **`descripcion`**: Descripción de la misión.
+- **`dificultad`**: Nivel de dificultad de la misión.
+- **`recompensa`**: Experiencia obtenida al completar la misión.
+- **`participantes`**: Lista de personajes asignados a la misión.
+
+#### Métodos:
+- **`asignarPersonaje(Personaje personaje)`**
+   Asigna un personaje a la misión.
+
+- **`completarMision()`**
+   Determina si los participantes pueden completar la misión (en función de atributos como nivel o poder). Si la misión se completa, otorga la recompensa.
+
+- **`detallesMision()`**
+   Devuelve una descripción detallada de la misión y los personajes asignados.
+
+---
+
+### **7. Clase `Torneo`**
+Permite organizar batallas en diferentes modalidades.
+
+#### Métodos:
+- **`organizarCombate1v1(Personaje p1, Personaje p2)`**  
+   Realiza un combate entre dos personajes.
+   
+- **`organizarCombateEquipo(List<Equipo> equipos)`**  
+   Realiza un combate entre equipos.
+   
+- **`organizarTodosContraTodos(List<Personaje> personajes)`**  
+   Organiza una batalla en la que todos los personajes luchan.
+
+---
+
+### **8. Clase Principal `SimuladorDeCombate`**
+La clase principal del programa, donde se inicializa todo el sistema.
+
+#### Métodos:
+- **`main(String[] args)`**  
+   Punto de entrada que inicia el sistema.
+
+- **`inicializarSistema()`**  
+   Crea héroes, villanos, equipos, misiones y rings para pruebas.
+
+- **`menuPrincipal()`**  
+   Muestra un menú para que el usuario elija opciones como crear personajes, iniciar combates, organizar torneos o realizar misiones.
+
+- **`crearEquipo()`**  
+   Permite a los usuarios formar un equipo seleccionando héroes y villanos disponibles.
+   
+- **`gestionarMisiones()`**  
+   Permite asignar personajes a misiones y verificar si se completan.
+
+---
+
+## Diagrama de Clases
+
+A continuación se presenta el diagrama de clases:
+
+```mermaid
+classDiagram
+    class Personaje {
+        - String nombre
+        - int nivel
+        - int experiencia
+        - int puntosVida
+        - int mana
+        - int poder
+        - int defensa
+        - double esquivarProbabilidad
+        - double criticoProbabilidad
+        --
+        + atacar(Personaje objetivo)
+        + esquivarAtaque() boolean
+        + recibirDanio(int danio)
+        + usarHabilidadEspecial()
+        + subirNivel()
+    }
+
+    class Heroe {
+        - int curacionBase
+        - int defensaExtra
+        --
+        + curar()
+        + reforzarDefensa()
+        + usarHabilidadEspecial()
+    }
+
+    class Villano {
+        - int venenoBase
+        - boolean poderDuplicado
+        --
+        + duplicarPoder()
+        + envenenar(Personaje objetivo)
+        + usarHabilidadEspecial()
+    }
+
+    class RingDeLucha {
+        - String nombre
+        - List~String~ peligros
+        - Map~String, String~ ventajas
+        --
+        + aplicarPeligros(List~Personaje~ personajes)
+        + calcularVentaja(String tipo)
+    }
+
+    class Equipo {
+        - String nombre
+        - List~Personaje~ miembros
+        --
+        + añadirMiembro(Personaje personaje)
+        + eliminarMiembro(Personaje personaje)
+        + curarEquipo()
+        + usarHabilidadEquipo()
+        + estaDerrotado() boolean
+    }
+
+    class Mision {
+        - String descripcion
+        - String dificultad
+        - int recompensa
+        - List~Personaje~ participantes
+        --
+        + asignarPersonaje(Personaje personaje)
+        + completarMision()
+        + detallesMision() String
+    }
+
+    class Torneo {
+        --
+        + organizarCombate1v1(Personaje p1, Personaje p2)
+        + organizarCombateEquipo(List~Equipo~ equipos)
+        + organizarTodosContraTodos(List~Personaje~ personajes)
+    }
+
+    class SimuladorDeCombate {
+        --
+        + main(String[] args)
+        + inicializarSistema()
+        + menuPrincipal()
+        + crearEquipo()
+        + gestionarMisiones()
+    }
+
+    Personaje <|-- Heroe
+    Personaje <|-- Villano
+    SimuladorDeCombate o-- RingDeLucha
+    SimuladorDeCombate o-- Equipo
+    SimuladorDeCombate o-- Mision
+    SimuladorDeCombate o-- Torneo
+    Equipo o-- Personaje
+    Mision o-- Personaje
+
+```
+---
+### **9. Propuestas para la 3EV**
+Para el proyecto de la tercera evaluacion:
+1. **Guardado y carga de datos:** Permitir guardar el progreso de los personajes y cargarlo en una nueva ejecución.
+2. **Interfaz gráfica básica:** Crear una interfaz sencilla con `Swing` o una consola interactiva mejorada.
+3. **Automatización:** Permitir que los combates sean automáticos si no hay un segundo jugador.
+
+---
